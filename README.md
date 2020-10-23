@@ -1,82 +1,52 @@
-# typescript-boilerplate
+# CSV format converter
 
-Minimalistic boilerplate to jump-start a [Node.js][nodejs] project in [TypeScript][typescript] [2.9][typescript-29].
+## Description
 
-Provides a basic template, "batteries included":
+Converts between different formats in csv files using standard input and standard output.
 
-+ [TypeScript][typescript] [2.9][typescript-29] to ES6 transpilation,
-+ [TSLint][tslint] 5.x with [Microsoft recommended rules][tslint-microsoft-contrib],
-+ [Jest][jest] unit testing and code coverage,
-+ Type definitions for Node.js v8 and Jest,
-+ [NPM scripts for common operations](#available-scripts),
-+ a simple example of TypeScript code and unit test,
-+ .editorconfig for consistent file format.
+It makes the CSV formats obtained from different databases and used when importing data to different databases compatible with each other.
 
-## Quick start
+For example, with this tool, you will be able to export a CSV file from postgresql and import it to Clickhouse without having to code a specific conversion logic.
 
-This project is intended to be used with v8 (LTS Carbon) release of [Node.js][nodejs] or newer and [NPM][npm]. Make sure you have those installed. Then just type following commands:
+### Usage example
 
-```sh
-git clone https://github.com/jsynowiec/node-typescript-boilerplate
-cd node-typescript-boilerplate
-npm install
+```bash
+psql 'postgresql://...' -c "\\copy (SELECT * FROM my_table) to stdout with csv header" | npx csv-format-converter --config-file my-conf.json | clickhouse-client --query="INSERT INTO my_table FORMAT CSVWithNames"
 ```
 
-or just download and unzip current `master` branch:
+## How it works
 
-```sh
-wget https://github.com/jsynowiec/node-typescript-boilerplate/archive/master.zip -O node-typescript-boilerplate
-unzip node-typescript-boilerplate.zip && rm node-typescript-boilerplate.zip
+It receives the input data from `stdin` and outputs the resulting transformation to `stdout`.
+
+It receives a configuration parameter `--config-file` that will define which types of transformations you want to apply. The configuration file will contain a JSON object that will have to meet the following interface:
+
+```ts
+interface ConfigurationFile {
+  schema: {
+    column_name: string;
+    data_type: 'string' | 'integer' | 'float' | 'date' | 'datetime' | 'boolean';
+    nullable: boolean;
+  }[];
+  input: CSVFormat;
+  output: CSVFormat;
+}
+
+interface CSVFormat {
+  separator?: string; // "," by default
+  header?: boolean; // True by default
+  nulls_encoded_as?: string; // "" by default
+  true_encoded_as?: string; // '1' by default
+  false_encoded_as?: string; // '0' by default
+  encoding?: string; // UTF-8 by default
+  enclosing?: {
+    characters?: string; // '"' by default
+    avoid_for_numbers?: boolean; // False by default
+    avoid_for_booleans?: boolean; // False by default
+    [work in progress]
+  };
+  date_format?: string; // 'YYYY-MM-DD' by default
+  datetime_format?: string; // Using toISOString() by default, eg "2020-10-23T08:29:42.695Z"
+}
 ```
 
-Now start adding your code in the `src` and unit tests in the `__tests__` directories. Have fun and build amazing things 🚀
-
-### Unit tests in JavaScript
-
-Writing unit tests in TypeScript can sometimes be troublesome and confusing. Especially when mocking dependencies and using spies.
-
-This is **optional**, but if you want to learn how to write JavaScript tests for TypeScript modules, read the [corresponding wiki page][wiki-js-tests].
-
-## Available scripts
-
-+ `clean` - remove coverage data, Jest cache and transpiled files,
-+ `build` - transpile TypeScript to ES6,
-+ `watch` - interactive watch mode to automatically transpile source files, 
-+ `lint` - lint source files and tests,
-+ `test` - run tests,
-+ `test:watch` - interactive watch mode to automatically re-run tests
-
-## Alternative
-
-As an alternative to TypeScript, you can try my [Node.js Flow boilerplate][flow-boilerplate]. It's basically the same but with ES6, async/await, Flow type checking and ESLint.
-
-## License
-Licensed under the APLv2. See the [LICENSE](https://github.com/jsynowiec/node-typescript-boilerplate/blob/master/LICENSE) file for details.
-
-[dependencies-badge]: https://david-dm.org/jsynowiec/node-typescript-boilerplate/dev-status.svg
-[dependencies]: https://david-dm.org/jsynowiec/node-typescript-boilerplate?type=dev
-[nodejs-badge]: https://img.shields.io/badge/node->=%208.9-blue.svg
-[nodejs]: https://nodejs.org/dist/latest-v8.x/docs/api/
-[npm-badge]: https://img.shields.io/badge/npm->=%205.5.1-blue.svg
-[npm]: https://docs.npmjs.com/
-[travis-badge]: https://travis-ci.org/jsynowiec/node-typescript-boilerplate.svg?branch=master
-[travis-ci]: https://travis-ci.org/jsynowiec/node-typescript-boilerplate
-[typescript]: https://www.typescriptlang.org/
-[typescript-29]: https://github.com/Microsoft/TypeScript/wiki/What's-new-in-TypeScript#typescript-29
-[license-badge]: https://img.shields.io/badge/license-APLv2-blue.svg
-[license]: https://github.com/jsynowiec/node-typescript-boilerplate/blob/master/LICENSE
-[prs-badge]: https://img.shields.io/badge/PRs-welcome-brightgreen.svg
-[prs]: http://makeapullrequest.com
-[donate-badge]: https://img.shields.io/badge/$-support-green.svg
-[donate]: http://bit.ly/donate-js
-[github-watch-badge]: https://img.shields.io/github/watchers/jsynowiec/node-typescript-boilerplate.svg?style=social
-[github-watch]: https://github.com/jsynowiec/node-typescript-boilerplate/watchers
-[github-star-badge]: https://img.shields.io/github/stars/jsynowiec/node-typescript-boilerplate.svg?style=social
-[github-star]: https://github.com/jsynowiec/node-typescript-boilerplate/stargazers
-[twitter]: https://twitter.com/intent/tweet?text=Check%20out%20this%20Node.js%20TypeScript%20boilerplate!%20https://github.com/jsynowiec/node-typescript-boilerplate%20%F0%9F%91%8D
-[twitter-badge]: https://img.shields.io/twitter/url/https/jsynowiec/node-typescript-boilerplate.svg?style=social
-[jest]: https://facebook.github.io/jest/
-[tslint]: https://palantir.github.io/tslint/
-[tslint-microsoft-contrib]: https://github.com/Microsoft/tslint-microsoft-contrib
-[flow-boilerplate]: https://github.com/jsynowiec/node-flowtype-boilerplate
-[wiki-js-tests]: https://github.com/jsynowiec/node-typescript-boilerplate/wiki/Unit-tests-in-plain-JavaScript
+[work in progress]
