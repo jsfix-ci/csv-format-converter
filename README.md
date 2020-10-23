@@ -1,17 +1,4 @@
-[![Dev dependencies][dependencies-badge]][dependencies]
-[![Node.js version][nodejs-badge]][nodejs]
-[![NPM version][npm-badge]][npm]
-[![Build Status][travis-badge]][travis-ci]
-
-[![APLv2][license-badge]][LICENSE]
-[![PRs Welcome][prs-badge]][prs]
-[![Donate][donate-badge]][donate]
-
-[![Watch on GitHub][github-watch-badge]][github-watch]
-[![Star on GitHub][github-star-badge]][github-star]
-[![Tweet][twitter-badge]][twitter]
-
-# node-typescript-boilerplate
+# typescript-boilerplate
 
 Minimalistic boilerplate to jump-start a [Node.js][nodejs] project in [TypeScript][typescript] [2.9][typescript-29].
 
