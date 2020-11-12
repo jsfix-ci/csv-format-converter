@@ -1,33 +1,40 @@
-/**
- * Some predefined delays (in milliseconds).
- */
-export enum Delays {
-  Short = 500,
-  Medium = 2000,
-  Long = 5000,
-}
+import * as stream from 'stream';
+import * as util from 'util';
+
+// Function that recives a String through stdin, converts it to upper case and writes it throgh stdout.
+// Using promisify-pipeline
+const pipelinePromise = util.promisify(stream.pipeline);
 
 /**
- * Returns a Promise<string> that resolves after given time.
- *
- * @param {string} name - A name.
- * @param {number=} [delay=Delays.Medium] - Number of milliseconds
- * to delay resolution of the Promise.
- * @returns {Promise<string>}
+ * Async function to call pipelinePromise, program entrypoint.
  */
-function delayedHello(name: string, delay: number): Promise<string> {
-  return new Promise(
-    (resolve: (value?: string) => void) => setTimeout(
-      () => resolve(`Hello, ${name}`),
-      delay,
-    ),
+async function run() {
+  // Awaits pipelinePromise to finish
+  await pipelinePromise(
+    // Read stdin
+    process.stdin,
+    // Transform data from stdin
+    new stream.Transform({
+      objectMode: true,
+      transform: (chunk, _0, callback) => {
+        try {
+          const data = chunk.toString().toUpperCase();
+          callback(null, data);
+        } catch (e) {
+          callback(e);
+        }
+      },
+    }),
+    process.stdout,
   );
 }
 
-// Below are examples of using TSLint errors suppression
-// Here it is suppressing missing type definitions for greeter function
-
-export async function greeter(name: string) { // tslint:disable-line typedef
-  // tslint:disable-next-line no-unsafe-any no-return-await
-  return await delayedHello(name, Delays.Long);
-}
+// As run is async, we can use .catch to handling errors and .then if code is succeed.
+run()
+  .then(() => {
+    process.exit(0);
+  })
+  .catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
