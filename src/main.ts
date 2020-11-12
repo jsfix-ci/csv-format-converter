@@ -5,8 +5,10 @@ import * as util from 'util';
 // Using promisify-pipeline
 const pipelinePromise = util.promisify(stream.pipeline);
 
-// Async function to call pipelinePromise
-async function pipeLinePromisify() {
+/**
+ * Async function to call pipelinePromise, program entrypoint.
+ */
+async function run() {
   // Awaits pipelinePromise to finish
   await pipelinePromise(
     // Read stdin
@@ -27,8 +29,8 @@ async function pipeLinePromisify() {
   );
 }
 
-// As pipeLinePromisify is async, we can use .catch to handling errors and .then if code is succeed.
-pipeLinePromisify()
+// As run is async, we can use .catch to handling errors and .then if code is succeed.
+run()
   .then(() => {
     process.exit(0);
   })
