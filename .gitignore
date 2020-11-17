@@ -30,4 +30,6 @@ build/
 
 # Misc
 otherSrc/
+
+#env
 .env
