@@ -4,7 +4,7 @@
     "title": "CSVFormat JSON Schema.",
     "description": "JSON Schema for CSV Formats.",
     "definitions": {
-        "csvformat":{
+        "csv_format":{
             "type":"object",
             "properties": {
                 "separator": {

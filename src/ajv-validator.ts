@@ -4,7 +4,7 @@ import * as defsSchema from './schemas/csv-format-schema.json';
 
 /**
  * Function that validates a Json through param with JsonSchema and returns this Json if it's valid.
- * If it's not valid, thorws an exception.
+ * If it's not valid, throws an exception.
  * @param {object} data - Json that must be validated.
  */
 export function checkConfigFile(data: object): void {

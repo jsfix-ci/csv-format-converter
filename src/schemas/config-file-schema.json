@@ -36,11 +36,11 @@
         },
         "input":{
             "description": "Input format type",
-            "$ref": "csv-format-schema.json#/definitions/csvformat"
+            "$ref": "csv-format-schema.json#/definitions/csv_format"
         },
         "output":{
             "description": "Output format type",
-            "$ref": "csv-format-schema.json#/definitions/csvformat"
+            "$ref": "csv-format-schema.json#/definitions/csv_format"
         }
 
     

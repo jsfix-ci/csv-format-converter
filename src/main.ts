@@ -2,7 +2,7 @@ import * as stream from 'stream';
 import * as util from 'util';
 import { setup } from './config';
 
-// Function that recives a String through stdin, converts it to upper case and writes it throgh stdout.
+// Function that recives through stdin a String, converts it to upper case and writes it throgh stdout.
 // Using promisify-pipeline
 const pipelinePromise = util.promisify(stream.pipeline);
 
