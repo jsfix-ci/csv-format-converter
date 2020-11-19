@@ -1,0 +1,74 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "csv-format-schema.json",
+    "title": "CSVFormat JSON Schema.",
+    "description": "JSON Schema for CSV Formats.",
+    "definitions": {
+        "csv_format":{
+            "type":"object",
+            "properties": {
+                "separator": {
+                    "description":"If rows have data separators and what are they, \",\" by default",
+                    "type": "string",
+                    "default": ","
+                },  
+                "header":{
+                    "description": "If given CSV has headers",
+                    "type": "boolean",
+                    "default": true
+                },
+                "nulls_encoded_as":{
+                    "description": "How nulls are encoded",
+                    "type": "string",
+                    "default": ""
+                },
+                "true_encoded_as":{
+                    "description": "How true values are encoded",
+                    "type": "string",
+                    "default": "1"
+                },
+                "false_encoded_as":{
+                    "description": "How false values are encoded",
+                    "type": "string",
+                    "default": "0"
+                },
+                "encoding":{
+                    "description": "Encoding format from csv given",
+                    "type": "string",
+                    "default": "UTF-8"
+                },
+                "enclosing":{
+                    "description": "How data is enclosed",
+                    "type": "object",
+                    "properties": {
+                        "characters":{
+                            "description": "How characters are enclosed",
+                            "type": "string",
+                            "default": "\""
+                        },
+                        "avoid_for_numbers":{
+                            "description": "If enclosing is present in numbers",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "avoid_for_booleans":{
+                            "description": "If enclosing is present in booleans",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                },
+                "date_format":{
+                    "description": "Format of date data types",
+                    "type": "string",
+                    "default": "YYYY-MM-DD"
+                },
+                "datetime_format":{
+                    "description": "Format of datetime data types",
+                    "type": "string",
+                    "default": "YYYY-MM-DDTHH:mm:ss.sssZ"
+                }
+            }
+        }
+    }
+}

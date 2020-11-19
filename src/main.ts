@@ -1,7 +1,8 @@
 import * as stream from 'stream';
 import * as util from 'util';
+import { setup } from './config';
 
-// Function that recives a String through stdin, converts it to upper case and writes it throgh stdout.
+// Function that recives through stdin a String, converts it to upper case and writes it throgh stdout.
 // Using promisify-pipeline
 const pipelinePromise = util.promisify(stream.pipeline);
 
@@ -9,6 +10,8 @@ const pipelinePromise = util.promisify(stream.pipeline);
  * Async function to call pipelinePromise, program entrypoint.
  */
 async function run() {
+  // Load config params
+  setup();
   // Awaits pipelinePromise to finish
   await pipelinePromise(
     // Read stdin

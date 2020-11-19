@@ -1,0 +1,46 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "config-file-schema.json",
+    "type": "object",
+    "title": "ConfigFile JSON Schema",
+    "description": "JSON Schema for ConfigFile",
+    "required": [
+        "schema",
+        "input",
+        "output"
+    ],
+    "properties": {
+        "schema": {
+            "type": "array",
+            "description":"Schema for table column details.",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "column_name": {
+                        "description": "Name of a table column",
+                        "type": "string"
+                    },
+                    "data_type": {
+                        "description": "Type of column data",
+                        "type": "string",
+                        "enum": ["string", "integer", "float", "date", "datetime", "boolean"]
+                    },
+                    "nullable": {
+                        "description": "If column can be nullable",
+                        "type": "boolean"
+                    }
+                },
+                "required": ["column_name", "data_type", "nullable"]
+            }
+            
+        },
+        "input":{
+            "description": "Input format type",
+            "$ref": "csv-format-schema.json#/definitions/csv_format"
+        },
+        "output":{
+            "description": "Output format type",
+            "$ref": "csv-format-schema.json#/definitions/csv_format"
+        }
+    }
+}
