@@ -37,6 +37,7 @@ async function run() {
       },
     }),
     csvStringify({
+      columns: jsonColumns,
       delimiter: options.configFile.output.separator,
       header: options.configFile.output.header,
     }),
@@ -60,9 +61,9 @@ async function run() {
 }
 
 /**
- * Function that recives a Json ConfigFile and returns all column names.
- * introduced by user
- *  * @param {ConfigurationFile} configFile - Json configuration file
+ * Function that recives a Json ConfigFile and returns all column names
+ * introduced by user.
+ * @param {ConfigurationFile} configFile - Json configuration file
  * @return {columns}
  */
 function createColumns(configFile: ConfigurationFile): string[] {
