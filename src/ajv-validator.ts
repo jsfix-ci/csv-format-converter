@@ -8,7 +8,7 @@ import * as defsSchema from './schemas/csv-format-schema.json';
  * @param {object} data - Json that must be validated.
  */
 export function checkConfigFile(data: object): void {
-  const ajv = new Ajv({ allErrors: true });
+  const ajv = new Ajv({ allErrors: true, useDefaults: true });
   const validate = ajv.addSchema(defsSchema).compile(userSchema);
   const valid = validate(data);
   if (!valid && validate.errors) {
