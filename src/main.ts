@@ -20,21 +20,11 @@ async function run() {
     // Read stdin
     process.stdin,
     csvParse({
-      columns: (() => jsonColumns),
+      // If input data have header omits that first line
+      from_line: options.configFile.input.header ? 2 : 1,
+      columns: jsonColumns,
       delimiter: options.configFile.input.separator,
       encoding: options.configFile.input.encoding,
-    }),
-    // Transform data from stdin
-    new stream.Transform({
-      objectMode: true,
-      transform: (chunk, _0, callback) => {
-        try {
-          const data = chunk.toString().toUpperCase();
-          callback(null, data);
-        } catch (e) {
-          callback(e);
-        }
-      },
     }),
     csvStringify({
       columns: jsonColumns,
