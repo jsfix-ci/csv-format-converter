@@ -89,7 +89,7 @@ function createColumns(configFile: ConfigurationFile): string[] {
 }
 
 /**
- * Function that recives each row from csv, user's Json config file and a schema map and
+ * Function that receives each row from csv, user's Json config file and a schema map and
  * transforms all data to the correct types specified by user.
  * @param {DynamicObject} csvRow - Each csv row
  * @param {ConfigurationFile} configFile - Json configuration file
@@ -129,14 +129,9 @@ function inputCsvRowTransform(csvRow: DynamicObject, configFile: ConfigurationFi
 /**
  * Checks if data is a String and returns a String.
  * @param {string} data - Each csv data.
- * @param {*} columnProp - Column properties
  * @return {string}
  */
-function dataToString(data: string, column_name: any): string {
-  const regexp = 	/^.*$/;
-  if (!regexp.test(data)) {
-    throw new Error(`${data} in column ${column_name} is not a valid string`);
-  }
+function dataToString(data: string): string {
   return data;
 }
 
