@@ -1,6 +1,6 @@
 import * as stream from 'stream';
 import * as util from 'util';
-import { ConfigurationFile, setup } from './config';
+import { ConfigurationFile, CSVFormat, setup } from './config';
 import * as csvParse from 'csv-parse';
 import * as csvStringify from 'csv-stringify';
 import * as moment from 'moment';
@@ -9,6 +9,10 @@ import * as moment from 'moment';
 // Using promisify-pipeline
 const pipelinePromise = util.promisify(stream.pipeline);
 
+interface DynamicObject<T = any> {
+  [key: string]: T;
+}
+
 /**
  * Async function to call pipelinePromise, program entrypoint.
  */
@@ -16,7 +20,7 @@ async function run() {
   // Load config params
   const options = setup();
   const jsonColumns = createColumns(options.configFile);
-  // Map instance that matches the name of each column with his column_type and if it's nullable
+  // Map instance that matches the name of each column with its data_type and if it's nullable
   const schemaMap = new Map();
   for (const schema of options.configFile.schema) {
     schemaMap.set(schema.column_name, schema);
@@ -39,7 +43,7 @@ async function run() {
       objectMode: true,
       transform: (chunk, _0, callback) => {
         try {
-          const transformedChunk = CsvTransform(chunk, options.configFile, schemaMap);
+          const transformedChunk = inputCsvRowTransform(chunk, options.configFile, schemaMap);
           callback(null, transformedChunk);
         }catch (e) {
           callback(e);
@@ -71,7 +75,7 @@ async function run() {
 }
 
 /**
- * Function that recives a Json ConfigFile and returns all column names
+ * Function that receives a Json ConfigFile and returns all column names
  * introduced by user.
  * @param {ConfigurationFile} configFile - Json configuration file
  * @return {columns}
@@ -87,18 +91,18 @@ function createColumns(configFile: ConfigurationFile): string[] {
 /**
  * Function that recives each row from csv, user's Json config file and a schema map and
  * transforms all data to the correct types specified by user.
- * @param {*} csvRow - Each csv row
+ * @param {DynamicObject} csvRow - Each csv row
  * @param {ConfigurationFile} configFile - Json configuration file
  * @param {Map} schemaMap - Schema map
  * @return {csvRow} - Returns modified data row
  */
-function CsvTransform(csvRow: any, configFile: ConfigurationFile, schemaMap: Map<string, any>) {
+function inputCsvRowTransform(csvRow: DynamicObject, configFile: ConfigurationFile, schemaMap: Map<string, any>) {
   // Identifies each data in a row and gets the properties of each data column.
   for (const column in csvRow) {
     const csvData = csvRow[column];
     const columnProp = schemaMap.get(column);
     const columnDataType = columnProp.data_type;
-    const dataTypes: any = {
+    const dataTypes: DynamicObject<Function> = {
       string : dataToString,
       integer : dataToInteger,
       float : dataToFloat,
@@ -106,7 +110,7 @@ function CsvTransform(csvRow: any, configFile: ConfigurationFile, schemaMap: Map
       datetime : dataToDateTime,
       boolean : dataToBool,
     };
-    let data;
+    let data: any;
     // Checks if column is Nullable and csvData is nulls_encoded_as.
     if (columnProp.nullable && csvData === configFile.input.nulls_encoded_as) {
       data = null;
@@ -114,15 +118,11 @@ function CsvTransform(csvRow: any, configFile: ConfigurationFile, schemaMap: Map
       throw new Error(`Data on column ${columnProp.column_name} can't be null`);
     } else {
       // Each csv data is parsed to specified column type.
-      for (const key in dataTypes) {
-        if (key === columnDataType) {
-          const validateData = dataTypes[key];
-          data = validateData(csvData, columnProp, configFile);
-        }
-      }
-      // Transform each data with javaScript correct types.
-      csvRow[column] = data;
+      const parseData = dataTypes[columnDataType];
+      data = parseData(csvData, columnProp.column_name, configFile.input);
     }
+    // Transform each data with javaScript correct types.
+    csvRow[column] = data;
   }
   return csvRow;
 }
@@ -132,10 +132,10 @@ function CsvTransform(csvRow: any, configFile: ConfigurationFile, schemaMap: Map
  * @param {*} columnProp - Column properties
  * @return {string}
  */
-function dataToString(data: string, columnProp: any): string {
+function dataToString(data: string, column_name: any): string {
   const regexp = 	/^.*$/;
   if (!regexp.test(data)) {
-    throw new Error(`Data in column ${columnProp.column_name} is not a valid string`);
+    throw new Error(`${data} in column ${column_name} is not a valid string`);
   }
   return data;
 }
@@ -146,13 +146,12 @@ function dataToString(data: string, columnProp: any): string {
  * @param {*} columnProp - Column properties
  * @return {number} - data parsed to Number
  */
-function dataToInteger(data: string, columnProp: any): number {
+function dataToInteger(data: string, column_name: any): number {
   const regexp = /^([+-]?[1-9]\d*|0)$/;
   if (!regexp.test(data)) {
-    throw new Error(`Data in column ${columnProp.column_name} is not an integer`);
+    throw new Error(`${data} in column ${column_name} is not an integer`);
   }
-  const integer = Number(data);
-  return integer;
+  return Number(data);
 }
 
 /**
@@ -161,25 +160,24 @@ function dataToInteger(data: string, columnProp: any): number {
  * @param {*} columnProp - Column properties
  * @return {number} - data parsed to Number
  */
-function dataToFloat(data: string, columnProp: any): number {
-  const regexp = /\b\d+\b/;
+function dataToFloat(data: string, column_name: any): number {
+  const regexp = /^[+-]?([0-9]*[.])?[0-9]+$/;
   if (!regexp.test(data)) {
-    throw new Error(`Data in column ${columnProp.column_name} is not a float`);
+    throw new Error(`${data} in column ${column_name} is not a float`);
   }
-  const float = Number(+data);
-  return float;
+  return Number(data);
 }
 
 /**
  * Checks if data has correct time format and returns String
  * @param {string} data - Each csv data.
- * @param {ConfigurationFile} configFile - Json configuration file (to validate format)
+ * @param {CSVFormat} csvInput - Json configuration file (to validate format)
  * @param {*} columnProp - Column properties
  * @return {string} - data
  */
-function dataToDate(data: string, columnProp: any, configFile: ConfigurationFile): string {
-  if (!moment(data, configFile.input.date_format, true).isValid()) {
-    throw new Error(`Data in column ${columnProp.column_name} is not a valid date format`);
+function dataToDate(data: string, column_name: any, csvInput: CSVFormat): string {
+  if (!moment.utc(data, csvInput.date_format, true).isValid()) {
+    throw new Error(`${data} in column ${column_name} is not a valid date`);
   }
   return data;
 }
@@ -188,12 +186,12 @@ function dataToDate(data: string, columnProp: any, configFile: ConfigurationFile
  * Checks if data has correct time format and returns String
  * @param {string} data - Each csv data.
  * @param {*} columnProp - Column properties
- * @param {ConfigurationFile} configFile - Json configuration file (to validate format)
+ * @param {CSVFormat} csvInput - Json configuration file (to validate format)
  * @return {string} - data
  */
-function dataToDateTime(data: string, columnProp: any, configFile: ConfigurationFile): string {
-  if (!moment(data, configFile.input.datetime_format, true).isValid()) {
-    throw new Error(`Data in column ${columnProp.column_name} is not a valid datetime format`);
+function dataToDateTime(data: string, column_name: any, csvInput: CSVFormat): string {
+  if (!moment.utc(data, csvInput.datetime_format, true).isValid()) {
+    throw new Error(`${data} in column ${column_name} is not a valid datetime`);
   }
   return data;
 }
@@ -203,18 +201,17 @@ function dataToDateTime(data: string, columnProp: any, configFile: Configuration
  * NOTE: It seems that csvStringify parses booleans to 1 (true) or 0/"" (false) so keep in mind on output.
  * @param {string} data - Each csv data.
  * @param {*} columnProp - Column properties
- * @param {ConfigurationFile} configFile - Json configuration file (to validate format)
+ * @param {CSVFormat} csvInput - Json configuration file (to validate format)
  * @return {boolean}
  */
-function dataToBool(data: string, columnProp: any, configFile: ConfigurationFile): boolean {
-  const regexp = new RegExp(`^(${configFile.input.false_encoded_as}|${configFile.input.true_encoded_as})$`);
-  if (!regexp.test(data)) {
-    throw new Error(`Data in column ${columnProp.column_name} is not Boolean`);
-  }
-  if (data === configFile.input.false_encoded_as) {
+function dataToBool(data: string, column_name: any, csvInput: CSVFormat): boolean {
+  if (data !== csvInput.true_encoded_as && data !== csvInput.false_encoded_as) {
+    throw new Error(`${data} in column ${column_name} is not Boolean`);
+  }else if (data === csvInput.false_encoded_as) {
     return false;
+  } else {
+    return true;
   }
-  return true;
 }
 
 // As run is async, we can use .catch to handling errors and .then if code is succeed.

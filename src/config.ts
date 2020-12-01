@@ -12,7 +12,7 @@ env.load();
 /**
  * CSV Format Interface
  */
-interface CSVFormat {
+export interface CSVFormat {
   separator?: string; // "," by default
   header?: boolean; // True by default
   nulls_encoded_as?: string; // "" by default
