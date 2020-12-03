@@ -30,6 +30,7 @@
                         "type": "boolean"
                     }
                 },
+                "additionalProperties": false,
                 "required": ["column_name", "data_type", "nullable"]
             }
             
@@ -42,5 +43,6 @@
             "description": "Output format type",
             "$ref": "csv-format-schema.json#/definitions/csv_format"
         }
-    }
+    },
+    "additionalProperties": false
 }

@@ -12,7 +12,7 @@ env.load();
 /**
  * CSV Format Interface
  */
-interface CSVFormat {
+export interface CSVFormat {
   separator?: string; // "," by default
   header?: boolean; // True by default
   nulls_encoded_as?: string; // "" by default
@@ -72,14 +72,19 @@ export function setup(): Options {
 }
 
 /**
+ * Column Interface
+ */
+export interface Column {
+  column_name: string;
+  data_type: 'string' | 'boolean' | 'integer' | 'float' | 'date' | 'datetime';
+  nullable: boolean;
+}
+
+/**
  * Configuration File Interface
  */
 export interface ConfigurationFile {
-  schema: {
-    column_name: string;
-    data_type: 'string' | 'integer' | 'float' | 'date' | 'datetime' | 'boolean';
-    nullable: boolean;
-  }[];
+  schema: Column[];
   input: CSVFormat;
   output: CSVFormat;
 }
