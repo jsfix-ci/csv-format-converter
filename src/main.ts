@@ -114,7 +114,7 @@ function inputCsvRowTransform(csvRow: DynamicObject, configFile: ConfigurationFi
       integer : dataToInteger,
       float : dataToFloat,
       date : dataToOutputDateFormat,
-      datetime : dataToDateTime,
+      datetime : dataToOutputDatetimeFormat,
       boolean : dataToOutputBoolEncodedAs,
     };
     let data: any;
@@ -172,14 +172,14 @@ function dataToFloat(data: string, column_name: string): number {
 }
 
 /**
- * Checks if data has correct time format and returns String Json output date_format format
+ * Checks if data has correct time format and returns a string containing the date with the csvOutput.date_format format
  * @param {string} data - Each csv data.
- * @param {CSVFormat} csvInput - Input Json format declared by user in Configuration File (if user doesn't declare it
+ * @param {CSVFormat} csvInput - Input CSV format declared by user in Configuration File (if user doesn't declare it
  * it takes default format specified in Json Schema).
- * @param {CSVFormat} csvOutput - Output Json format declared by user in Configuration File (if user doesn't declare it
+ * @param {CSVFormat} csvOutput - Output CSV format declared by user in Configuration File (if user doesn't declare it
  * it takes default format specified in Json Schema).
  * @param {string} column_name - Column name
- * @return {string} - data with Json output date_format format
+ * @return {string} - data with the csvOutput.date_format format
  */
 function dataToOutputDateFormat(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
   if (!moment.utc(data, csvInput.date_format, true).isValid()) {
@@ -189,16 +189,16 @@ function dataToOutputDateFormat(data: string, column_name: string, csvInput: CSV
 }
 
 /**
- * Checks if data has correct time format and returns String with Json output datetime_format format
+ * Checks if data has correct time format and returns a string containing the date with the csvOutput.datetime_format format
  * @param {string} data - Each csv data.
  * @param {string} column_name - Column name
- * @param {CSVFormat} csvInput - Input Json format declared by user in Configuration File (if user doesn't declare it
+ * @param {CSVFormat} csvInput - Input CSV format declared by user in Configuration File (if user doesn't declare it
  * it takes default format specified in Json Schema).
- * @param {CSVFormat} csvOutput - Output Json format declared by user in Configuration File (if user doesn't declare it
+ * @param {CSVFormat} csvOutput - Output CSV format declared by user in Configuration File (if user doesn't declare it
  * it takes default format specified in Json Schema).
- * @return {string} - data with Json output datetime_format format
+ * @return {string} - data with the csvOutput.datetime_format format
  */
-function dataToDateTime(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
+function dataToOutputDatetimeFormat(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
   if (!moment.utc(data, csvInput.datetime_format, true).isValid()) {
     throw new Error(`${data} in column ${column_name} is not a valid datetime`);
   }
