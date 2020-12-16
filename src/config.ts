@@ -11,21 +11,24 @@ env.load();
 
 /**
  * CSV Format Interface
+ * All parameters are introduced by module ajv-validator (checkConfigFile function)
+ * even though user doesn't declare some or all of them in Json Config File.
+ * All values, if not declared by user, are default values specified in Json Schemas.
  */
 export interface CSVFormat {
-  separator?: string; // "," by default
-  header?: boolean; // True by default
-  nulls_encoded_as?: string; // "" by default
-  true_encoded_as?: string; // '1' by default
-  false_encoded_as?: string; // '0' by default
-  encoding?: string; // UTF-8 by default
-  enclosing?: {
-    characters?: string; // '"' by default
-    avoid_for_numbers?: boolean; // False by default
-    avoid_for_booleans?: boolean; // False by default
+  separator: string; // "," by default
+  header: boolean; // True by default
+  nulls_encoded_as: string; // "" by default
+  true_encoded_as: string; // '1' by default
+  false_encoded_as: string; // '0' by default
+  encoding: string; // UTF-8 by default
+  enclosing: {
+    characters: string; // '"' by default
+    avoid_for_numbers: boolean; // False by default
+    avoid_for_booleans: boolean; // False by default
   };
-  date_format?: string; // 'YYYY-MM-DD' by default
-  datetime_format?: string; // Using toISOString() by default, eg "2020-10-23T08:29:42.695Z"
+  date_format: string; // 'YYYY-MM-DD' by default
+  datetime_format: string; // Using toISOString() by default, eg "2020-10-23T08:29:42.695Z"
 }
 
 /**
