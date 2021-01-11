@@ -10,12 +10,18 @@
                 "separator": {
                     "description":"If rows have data separators and what are they, \",\" by default",
                     "type": "string",
+                    "enum": [",", ";", "\t"],
                     "default": ","
                 },  
                 "header":{
                     "description": "If given CSV has headers",
                     "type": "boolean",
                     "default": true
+                },
+                "escape":{
+                    "description": "Escape character",
+                    "type": "string",
+                    "default": "\\"
                 },
                 "nulls_encoded_as":{
                     "description": "How nulls are encoded",
@@ -25,12 +31,14 @@
                 "true_encoded_as":{
                     "description": "How true values are encoded",
                     "type": "string",
-                    "default": "1"
+                    "default": "1",
+                    "pattern": "^[a-zA-Z0-9_]+$"
                 },
                 "false_encoded_as":{
                     "description": "How false values are encoded",
                     "type": "string",
-                    "default": "0"
+                    "default": "0",
+                    "pattern": "^[a-zA-Z0-9_]+$"
                 },
                 "encoding":{
                     "description": "Encoding format from csv given",
@@ -40,21 +48,20 @@
                 "enclosing":{
                     "description": "How data is enclosed",
                     "type": "object",
+                    "default": {
+                        "characters" : "\"",
+                        "strict": true
+                    },
                     "properties": {
                         "characters":{
                             "description": "How characters are enclosed",
                             "type": "string",
                             "default": "\""
                         },
-                        "avoid_for_numbers":{
-                            "description": "If enclosing is present in numbers",
+                        "strict":{
+                            "description": "When true every value is enclosed, when false only values that require enclosing are enclosed.",
                             "type": "boolean",
-                            "default": false
-                        },
-                        "avoid_for_booleans":{
-                            "description": "If enclosing is present in booleans",
-                            "type": "boolean",
-                            "default": false
+                            "default": true
                         }
                     },
                     "additionalProperties": false

@@ -22,7 +22,7 @@ type Parser = (
 /**
  * Async function to call pipelinePromise, program entrypoint.
  */
-async function run() {
+export async function run() {
   // Load config params
   const options = setup();
   const jsonColumns = createColumns(options.configFile);
@@ -42,6 +42,7 @@ async function run() {
       columns: jsonColumns,
       delimiter: options.configFile.input.separator,
       encoding: options.configFile.input.encoding,
+      escape: options.configFile.input.escape,
     }),
     /**
      * Transforms all data rows.
@@ -60,7 +61,10 @@ async function run() {
     csvStringify({
       columns: jsonColumns,
       delimiter: options.configFile.output.separator,
+      escape: options.configFile.output.escape,
       header: options.configFile.output.header,
+      quote: options.configFile.output.enclosing.characters,
+      quoted: options.configFile.output.enclosing.strict,
     }),
     /**
      * Encoding data transform.
@@ -225,13 +229,3 @@ function dataToOutputBoolEncodedAs(data: string, column_name: string, csvInput: 
     return csvOutput.true_encoded_as;
   }
 }
-
-// As run is async, we can use .catch to handling errors and .then if code is succeed.
-run()
-  .then(() => {
-    process.exit(0);
-  })
-  .catch((err) => {
-    console.error(err);
-    process.exit(1);
-  });
