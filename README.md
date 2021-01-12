@@ -40,8 +40,7 @@ interface CSVFormat {
   encoding?: string; // UTF-8 by default
   enclosing?: {
     characters?: string; // '"' by default
-    avoid_for_numbers?: boolean; // False by default
-    avoid_for_booleans?: boolean; // False by default
+    strict?: boolean // true by default
     [work in progress]
   };
   date_format?: string; // 'YYYY-MM-DD' by default

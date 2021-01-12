@@ -10,6 +10,24 @@ import { checkConfigFile } from './ajv-validator';
 env.load();
 
 /**
+ * Column Interface
+ */
+export interface Column {
+  column_name: string;
+  data_type: 'string' | 'boolean' | 'integer' | 'float' | 'date' | 'datetime';
+  nullable: boolean;
+}
+
+/**
+ * Configuration File Interface
+ */
+export interface ConfigurationFile {
+  schema: Column[];
+  input: CSVFormat;
+  output: CSVFormat;
+}
+
+/**
  * CSV Format Interface
  * All parameters are introduced by module ajv-validator (checkConfigFile function)
  * even though user doesn't declare some or all of them in Json Config File.
@@ -72,22 +90,4 @@ export function setup(): Options {
     configFile,
   };
   return scriptParameters;
-}
-
-/**
- * Column Interface
- */
-export interface Column {
-  column_name: string;
-  data_type: 'string' | 'boolean' | 'integer' | 'float' | 'date' | 'datetime';
-  nullable: boolean;
-}
-
-/**
- * Configuration File Interface
- */
-export interface ConfigurationFile {
-  schema: Column[];
-  input: CSVFormat;
-  output: CSVFormat;
 }
