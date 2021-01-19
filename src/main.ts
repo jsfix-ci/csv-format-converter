@@ -1,6 +1,6 @@
 import * as stream from 'stream';
 import * as util from 'util';
-import { ConfigurationFile, Column, CSVFormat, setup } from './config';
+import { ConfigurationFile, Column, CSVFormat, setup, Options } from './config';
 import * as csvParse from 'csv-parse';
 import * as csvStringify from 'csv-stringify';
 import * as moment from 'moment';
@@ -22,9 +22,10 @@ type Parser = (
 /**
  * Async function to call pipelinePromise, program entrypoint.
  */
-export async function run() {
+export async function run(options: Options = setup(),
+                          inputStream: stream.Readable = process.stdin,
+                          outputStream: stream.Writable = process.stdout) {
   // Load config params
-  const options = setup();
   const jsonColumns = createColumns(options.configFile);
   // Map instance that matches the name of each column with its data_type and if it's nullable
   const schemaMap = new Map<string, Column>();
@@ -34,8 +35,8 @@ export async function run() {
   }
   // Awaits pipelinePromise to finish
   await pipelinePromise(
-    // Read stdin
-    process.stdin,
+    // Read inputStream
+    inputStream,
     csvParse({
       // If input data have header omits that first line
       from_line: options.configFile.input.header ? 2 : 1,
@@ -81,7 +82,7 @@ export async function run() {
         }
       },
     }),
-    process.stdout,
+    outputStream,
   );
 }
 
@@ -91,7 +92,7 @@ export async function run() {
  * @param {ConfigurationFile} configFile - Json configuration file
  * @return {columns}
  */
-function createColumns(configFile: ConfigurationFile): string[] {
+export function createColumns(configFile: ConfigurationFile): string[] {
   const columns: string[] = [];
   for (let i = 0; i < configFile.schema.length; i += 1) {
     columns[i] = configFile.schema[i].column_name;
@@ -107,7 +108,7 @@ function createColumns(configFile: ConfigurationFile): string[] {
  * @param {Map} schemaMap - Schema map
  * @return {csvRow} - Returns modified data row
  */
-function inputCsvRowTransform(csvRow: DynamicObject, configFile: ConfigurationFile, schemaMap: Map<string, any>) {
+export function inputCsvRowTransform(csvRow: DynamicObject, configFile: ConfigurationFile, schemaMap: Map<string, any>) {
   // Identifies each data in a row and gets the properties of each data column.
   for (const column in csvRow) {
     const csvData = csvRow[column];
@@ -143,7 +144,7 @@ function inputCsvRowTransform(csvRow: DynamicObject, configFile: ConfigurationFi
  * @param {string} data - Each csv data.
  * @return {string}
  */
-function dataToString(data: string): string {
+export function dataToString(data: string): string {
   return data;
 }
 
@@ -153,7 +154,7 @@ function dataToString(data: string): string {
  * @param {string} column_name - Column name
  * @return {number} - data parsed to Number
  */
-function dataToInteger(data: string, column_name: string): number {
+export function dataToInteger(data: string, column_name: string): number {
   const regexp = /^([+-]?[1-9]\d*|0)$/;
   if (!regexp.test(data)) {
     throw new Error(`${data} in column ${column_name} is not an integer`);
@@ -167,7 +168,7 @@ function dataToInteger(data: string, column_name: string): number {
  * @param {string} column_name - Column name
  * @return {number} - data parsed to Number
  */
-function dataToFloat(data: string, column_name: string): number {
+export function dataToFloat(data: string, column_name: string): number {
   const regexp = /^[+-]?([0-9]*[.])?[0-9]+$/;
   if (!regexp.test(data)) {
     throw new Error(`${data} in column ${column_name} is not a float`);
@@ -185,7 +186,7 @@ function dataToFloat(data: string, column_name: string): number {
  * @param {string} column_name - Column name
  * @return {string} - data with the csvOutput.date_format format
  */
-function dataToOutputDateFormat(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
+export function dataToOutputDateFormat(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
   if (!moment.utc(data, csvInput.date_format, true).isValid()) {
     throw new Error(`${data} in column ${column_name} is not a valid date`);
   }
@@ -202,7 +203,7 @@ function dataToOutputDateFormat(data: string, column_name: string, csvInput: CSV
  * it takes default format specified in Json Schema).
  * @return {string} - data with the csvOutput.datetime_format format
  */
-function dataToOutputDatetimeFormat(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
+export function dataToOutputDatetimeFormat(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
   if (!moment.utc(data, csvInput.datetime_format, true).isValid()) {
     throw new Error(`${data} in column ${column_name} is not a valid datetime`);
   }
@@ -220,7 +221,7 @@ function dataToOutputDatetimeFormat(data: string, column_name: string, csvInput:
  * it takes default format specified in Json Schema).
  * @return {string}
  */
-function dataToOutputBoolEncodedAs(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
+export function dataToOutputBoolEncodedAs(data: string, column_name: string, csvInput: CSVFormat, csvOutput: CSVFormat): string {
   if (data !== csvInput.true_encoded_as && data !== csvInput.false_encoded_as) {
     throw new Error(`${data} in column ${column_name} is not Boolean`);
   }else if (data === csvInput.false_encoded_as) {

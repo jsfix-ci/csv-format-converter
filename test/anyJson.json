@@ -1,0 +1,24 @@
+{
+    "schema":[
+        {
+            "column_name": "Column1",
+            "data_type": "float",
+            "nullable": true
+        },
+        {
+            "column_name": "Column2",
+            "data_type": "string",
+            "nullable": true
+        },
+        {
+            "column_name": "Column3",
+            "data_type": "boolean",
+            "nullable": true
+        }
+    ],
+    "input": {
+        "header": true
+    },
+    "output": {
+    }
+}

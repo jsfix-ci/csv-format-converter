@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+/* istanbul ignore file */
 import { run } from './main';
 
 // As run is async, we can use .catch to handling errors and .then if code is succeed.
