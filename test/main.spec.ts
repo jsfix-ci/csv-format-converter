@@ -310,7 +310,7 @@ describe('Checks configuration file is valid and populates it with default value
 describe('Checks initialization setup', () => {
   // setup returns an object with all key: value pairs in config file. If a value is not specified it will return defaul value.
   it('Should return an object with JSON keys: values', () => {
-    expect(setup(['--config-file', 'test/anyJson.json'])).toEqual({
+    expect(setup(['--config-file', 'test/my-conf.json'])).toEqual({
       configFile: {
         schema: [{
           "column_name": "Column1",
@@ -362,7 +362,7 @@ describe('Checks initialization setup', () => {
   })
   // setup returns an object with all key: value pairs in config file. If a value is not specified it will return defaul value.
   it('Should return an object with JSON keys: values (using process.argv branch)', () => {
-    process.argv = ['node -r ts-node/register', 'test/dummy.ts', '--config-file', 'test/anyJson.json'];
+    process.argv = ['node -r ts-node/register', 'test/dummy.ts', '--config-file', 'test/my-conf.json'];
     expect(setup()).toEqual({
       configFile: {
         schema: [{

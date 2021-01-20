@@ -11,7 +11,7 @@ For example, with this tool, you will be able to export a CSV file from postgres
 ### Usage example
 
 ```bash
-psql 'postgresql://...' -c "\\copy (SELECT * FROM my_table) to stdout with csv header" | npx csv-format-converter --config-file my-conf.json | clickhouse-client --query="INSERT INTO my_table FORMAT CSVWithNames"
+psql 'postgresql://...' -c "\\copy (SELECT * FROM my_table) to stdout with csv header" | npx @trans/csvconverter --config-file my-conf.json | clickhouse-client --query="INSERT INTO my_table FORMAT CSVWithNames"
 ```
 
 ## How it works
@@ -41,11 +41,8 @@ interface CSVFormat {
   enclosing?: {
     characters?: string; // '"' by default
     strict?: boolean // true by default
-    [work in progress]
   };
   date_format?: string; // 'YYYY-MM-DD' by default
   datetime_format?: string; // Using toISOString() by default, eg "2020-10-23T08:29:42.695Z"
 }
 ```
-
-[work in progress]

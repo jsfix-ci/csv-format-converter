@@ -1,10 +1,10 @@
 {
-  "name": "typescript-boilerplate",
+  "name": "@trans/csv-format-converter",
   "version": "0.0.1",
-  "description": "Minimalistic boilerplate to quick-start Node.js development in TypeScript.",
+  "description": "CSV Converter",
   "author": "The Transparent Team",
   "license": "",
-  "main": "build/src/main.js",
+  "main": "build/main.js",
   "ts:main": "src/main.ts",
   "types": "src/main.ts",
   "bin": {
@@ -13,6 +13,10 @@
   "engineStrict": true,
   "engines": {
     "node": ">=10.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://bitbucket.org:seetransparent/csv-format-converter.git"
   },
   "devDependencies": {
     "@types/jest": "~22.2.3",
