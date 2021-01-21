@@ -6,10 +6,8 @@
   "license": "",
   "main": "build/main.js",
   "ts:main": "src/main.ts",
-  "types": "src/main.ts",
-  "bin": {
-    "csvconverter": "./build/run.js"
-  },
+  "types": "build/main.d.ts",
+  "bin": "./build/run.js",
   "engineStrict": true,
   "engines": {
     "node": ">=10.16.0"
