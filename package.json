@@ -34,6 +34,7 @@
   "scripts": {
     "clean": "rimraf coverage build tmp",
     "prepublish": "npm run build",
+    "start": "node build/run.js",
     "build": "tsc -p tsconfig.release.json",
     "build-test": "tsc -p tsconfig.json --noEmit",
     "watch": "tsc -w -p tsconfig.release.json",
