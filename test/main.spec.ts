@@ -9,7 +9,7 @@ describe('Data parsing function', () => {
   test('dataToString behaves as identity function for strings', () => {
     expect(Main.dataToString('Some string')).toBe('Some string');
   });
-  // dataToInteger checks correcly a valid Integer
+  // dataToInteger checks correctly a valid Integer
   it('Should parse given string to integer', () => {
     expect(Main.dataToInteger('10', 'Integer Column')).toBe(10);
   });
@@ -19,7 +19,7 @@ describe('Data parsing function', () => {
       Main.dataToInteger('10.1', 'Integer Column');
     }).toThrow();
   });
-  // dataToFloat checks correcly a valid Float
+  // dataToFloat checks correctly a valid Float
   it('Should parse given string to a float', () => {
     expect(Main.dataToFloat('10.1', 'Float Column')).toBe(10.1);
   });
@@ -340,7 +340,8 @@ describe('Checks configuration file is valid and populates it with default value
 
 // setup function tests
 describe('Checks initialization setup', () => {
-  // setup returns an object with all key: value pairs in config file. If a value is not specified it will return defaul value.
+  // setup returns an object with all key: value pairs in config file.
+  // If a value is not specified it will return defaul value.
   it('Should return an object with JSON keys: values', () => {
     expect(setup(['--config-file', 'test/my-conf.json'])).toEqual({
       configFile: {
@@ -394,7 +395,8 @@ describe('Checks initialization setup', () => {
       },
     });
   });
-  // setup returns an object with all key: value pairs in config file. If a value is not specified it will return defaul value.
+  // setup returns an object with all key: value pairs in config file.
+  // If a value is not specified it will return defaul value.
   it('Should return an object with JSON keys: values (using process.argv branch)', () => {
     process.argv = ['node -r ts-node/register', 'test/dummy.ts', '--config-file', 'test/my-conf.json'];
     expect(setup()).toEqual({
