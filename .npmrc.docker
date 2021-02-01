@@ -1,3 +1,0 @@
-//npm.seetransparent.com/:_authToken=${NPM_TOKEN}
-@trans:registry = "https://npm.seetransparent.com/"
-registry = "https://registry.npmjs.org/"
