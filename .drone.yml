@@ -2,6 +2,9 @@
 kind: pipeline
 name: default
 type: kubernetes
+platform:
+  os: linux
+  arch: amd64
 clone:
   disable: true
 steps:
@@ -10,7 +13,7 @@ steps:
   image: node:14
   commands:
     - echo $NPM_RC | base64 -d > .npmrc
-    - npm ci
+    - npm install
     - npm run build-test
     - npm run lint
     - npm test
