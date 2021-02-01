@@ -12,7 +12,7 @@ steps:
   image: node:14
   commands:
     - echo $NPM_RC | base64 -d > .npmrc
-    - npm install
+    - npm ci
     - npm run build-test
     - npm run lint
     - npm test
