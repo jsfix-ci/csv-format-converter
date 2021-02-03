@@ -575,10 +575,8 @@ describe('Checks run function - program entrypoint', () => {
     };
     const data = Readable.from('a,b,c\n2.12,Peter,1\n2.03,Charles,%\n');
     const outData = new Writable();
-    let out: string;
-    outData._write = function (chunk, _0, callback) {
+    outData._write = function (_chunk, _0, callback) {
       // Defining string
-      out += chunk.toString();
       callback();
     };
     await expect(Main.run(options as Options, data, outData)).rejects.toThrow();
