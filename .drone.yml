@@ -2,18 +2,22 @@
 kind: pipeline
 name: default
 type: kubernetes
-clone:
-  disable: true
+platform:
+  os: linux
+  arch: amd64
+
 steps:
-  - name: git
-    pull: default
-    image: plugins/git
-    settings:
-      depth: 1
-  - name: lint
-    pull: default
-    image: node:10.16
-    commands:
-      - npm install
-      - npm run build-test
-      - npm run test
+- name: test
+  pull: default
+  image: node:14
+  commands:
+    - echo $NPM_RC | base64 -d > .npmrc
+    - npm ci
+    - npm run build-test
+    - npm run lint
+    - npm test
+  environment:
+    NPM_TOKEN:
+      from_secret: npm_token
+    NPM_RC:
+      from_secret: npm_rc

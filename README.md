@@ -10,8 +10,93 @@ For example, with this tool, you will be able to export a CSV file from postgres
 
 ### Usage example
 
+CASE 1:
+
 ```bash
-psql 'postgresql://...' -c "\\copy (SELECT * FROM my_table) to stdout with csv header" | npx csv-format-converter --config-file my-conf.json | clickhouse-client --query="INSERT INTO my_table FORMAT CSVWithNames"
+psql 'postgresql://...' -c "\\copy (SELECT * FROM my_table) to stdout with csv header" | npx @trans/csv-format-converter --config-file my-conf.json | clickhouse-client --query="INSERT INTO my_table FORMAT CSVWithNames"
+```
+
+
+CASE 2:
+
+Given this data.csv:
+
+a,b,c,d,e,f
+helloworld,5,1.1,2021-01-27,2012-10-01T09:45:00.000+00:00,
+
+and this config file my-conf.json:
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "Column1",
+            "data_type": "string",
+            "nullable": true
+        },
+        {
+            "column_name": "Column2",
+            "data_type": "integer",
+            "nullable": true
+        },
+        {
+            "column_name": "Column3",
+            "data_type": "float",
+            "nullable": true
+        },
+        {
+            "column_name": "Column4",
+            "data_type": "date",
+            "nullable": true
+        },
+        {
+            "column_name": "Column5",
+            "data_type": "datetime",
+            "nullable": true
+        },
+        {
+            "column_name": "Column6",
+            "data_type": "boolean",
+            "nullable": true
+        }
+    ],
+    "input": {
+        "separator": ",",
+        "header": true,
+        "escape": "\\",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "1",
+        "false_encoded_as": "0",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": true
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.sssZ"
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\\",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "1",
+        "false_encoded_as": "0",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": true
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.sssZ"
+    }
+}
+```
+
+csv-format-converter shuld be called as follows
+
+```bash
+cat data.csv | npx @trans/csv-format-converter --config-file my-config.json
 ```
 
 ## How it works
@@ -41,11 +126,54 @@ interface CSVFormat {
   enclosing?: {
     characters?: string; // '"' by default
     strict?: boolean // true by default
-    [work in progress]
   };
   date_format?: string; // 'YYYY-MM-DD' by default
   datetime_format?: string; // Using toISOString() by default, eg "2020-10-23T08:29:42.695Z"
 }
 ```
+### Config file Json
 
-[work in progress]
+This Json file is an example of configuraation file with default values. "schema" array must contain a number of objects equivalent to the amount of columns, the type of each column nd if each column is nullable in csv provided.
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "Column1",
+            "data_type": "string",
+            "nullable": true
+        }
+    ],
+    "input": {
+        "separator": ",",
+        "header": true,
+        "escape": "\\",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "1",
+        "false_encoded_as": "0",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": true
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.sssZ"
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\\",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "1",
+        "false_encoded_as": "0",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": true
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.sssZ"
+    }
+}
+```
+

@@ -68,18 +68,17 @@ const cliArguments = [
 ];
 
 /**
- * Available options
- */
-const options = env.getArguments(cliArguments, process.argv, {
-  handleHelp: true,
-  handleUnknown: true,
-});
-
-/**
  * Function that add command and validates Json given from user.
  * @return {Options} - Available options
  */
-export function setup(): Options {
+export function setup(argv: string[] = process.argv): Options {
+  /**
+   * Available options
+   */
+  const options = env.getArguments(cliArguments, argv, {
+    handleHelp: true,
+    handleUnknown: true,
+  });
   const configPath: string = options['config-file'];
   // User's Json
   const userData = fs.readFileSync(configPath, { encoding: 'utf-8' });
