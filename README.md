@@ -93,7 +93,7 @@ and this config file my-conf.json:
 }
 ```
 
-csv-format-converter shuld be called as follows
+csv-format-converter shuld be called as follows:
 
 ```bash
 cat data.csv | npx @trans/csv-format-converter --config-file my-config.json
@@ -131,6 +131,7 @@ interface CSVFormat {
   datetime_format?: string; // Using toISOString() by default, eg "2020-10-23T08:29:42.695Z"
 }
 ```
+
 ### Config file Json
 
 This Json file is an example of configuraation file with default values. "schema" array must contain a number of objects equivalent to the amount of columns, the type of each column nd if each column is nullable in csv provided.
@@ -185,7 +186,6 @@ null_encoded_as	integer	            float
 null	          NO	             NO
 NULL	          Works with --input_format_csv_unquoted_null_literal_as_null=1 parameter
 ""	              OK	             OK
-
 
 # Export form PostgreSQL and import to Clickhouse:
 
@@ -287,7 +287,6 @@ When importing from csv, user must be aware of data structure, mainly how nulls,
     }
 }
 ```
-
 
 # Export form MongoDB and import to Clickhouse:
 
@@ -404,7 +403,6 @@ When exporting from MongoDB if user uses a ndjson file and transforms it with js
 }
 ```
 
-
 # MongoDB
 
 Be aware that when importing CSV into MongoDB there is no way to insert null (empty) values. It will insert "some" value and that value is what user declares in Jscon config file. 
@@ -436,6 +434,40 @@ For Import CSV with Specified Field Types: https://docs.mongodb.com/database-too
         },
         "date_format": "YYYY-MM-DD",
         "datetime_format": "YYYY-MM-DD HH:mm:ss"
+    }
+}
+```
+
+# Pandas
+
+When importing CSV from Pandas pandas.read_csv() output null_encoded_as can be described as "null", "NULL" or empty string "".
+Note that when importing CSV file date and datetime columns can be declared as datetime64[ns] and datetime64[ns, UTC] respectively adding pandas.read_csv(filename, parse_dates=['date', 'datetime']) where 'date' and 'datetime' are column names whith date and datetime values.
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "exampleColumn",
+            "data_type": "string",
+            "nullable": true
+        }
+    ],
+    "input": {
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "null",
+        "true_encoded_as": "True",
+        "false_encoded_as": "False",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": false
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.SSSZ"
     }
 }
 ```
