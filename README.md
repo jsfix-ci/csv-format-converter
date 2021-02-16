@@ -177,3 +177,265 @@ This Json file is an example of configuraation file with default values. "schema
 }
 ```
 
+## Specific Json examples to import to Clickhouse
+
+IMPORTANT WHEN INSERTING TO CLICKHOUSE
+null_encoded_as	integer	            float
+\N	              OK	             OK
+null	          NO	             NO
+NULL	          Works with --input_format_csv_unquoted_null_literal_as_null=1 parameter
+""	              OK	             OK
+
+
+# Export form PostgreSQL and import to Clickhouse:
+
+```bash
+psql 'postgresql://...' -c "\\copy (SELECT * FROM my_table) to stdout with csv header" | npx @trans/csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
+```
+When using a ```timestamp without time zone``` column datatype, input CSVFormat is ```json "datetime_format": "YYYY-MM-DD HH:mm:ss"```
+When using a ```timestamp with time zone``` column datatype, input CSVFormat is ```json "datetime_format": "YYYY-MM-DD HH:mm:ssZ"```
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "exampleColumn",
+            "data_type": "string",
+            "nullable": true
+        }
+    ],
+    "input": {
+        "separator": ",",
+        "header": true,
+        "escape": "\\",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "t",
+        "false_encoded_as": "f",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": true
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DD HH:mm:ss"
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "1",
+        "false_encoded_as": "0",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": false
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.ss"
+    }
+}
+```
+
+# Export form csv and import to Clickhouse:
+
+NOTES:
+When importing from csv, user must be aware of data structure, mainly how nulls, boolean, enclosing and escape are codified. This is becasuse input values in my-config.json must match those values.
+
+```bash
+ cat my_data.csv | npx @trans/csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
+```
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "exampleColumn",
+            "data_type": "string",
+            "nullable": false
+        }
+    ],
+    "input": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "t",
+        "false_encoded_as": "f",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": false
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.sssZ"
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "1",
+        "false_encoded_as": "0",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": false
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.ss"
+    }
+}
+```
+
+
+# Export form MongoDB and import to Clickhouse:
+
+NOTES:
+When exporting from MongoDB if user uses a ndjson file and transforms it with json2csv module will throw PrsingException when inserting data with null values in float columns if output "null_encoded_as": "\\N". output "null_encoded_as": "NULL" also will throw ParsingException even with --input_format_csv_unquoted_null_literal_as_null=1 parameter. Is highly recommended to use a different null_encoded_as such as empty string "". This error may occur with large amount of data.
+
+```bash
+ cat my_data.ndjson | npx json2csv | npx @trans/csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
+```
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "exampleColumn",
+            "data_type": "string",
+            "nullable": false
+        }
+    ],
+    "input": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "t",
+        "false_encoded_as": "f",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": false
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.sssZ"
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "1",
+        "false_encoded_as": "0",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": false
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.ss"
+    }
+}
+```
+
+## CSVFormat examples for import data
+
+# Clickhouse
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "exampleColumn",
+            "data_type": "string",
+            "nullable": true
+        }
+    ],
+    "input": {
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "1",
+        "false_encoded_as": "0",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": false
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DDTHH:mm:ss.ss"
+    }
+}
+```
+
+# PostgreSQL
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "exampleColumn",
+            "data_type": "string",
+            "nullable": true
+        }
+    ],
+    "input": {
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "t",
+        "false_encoded_as": "f",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": true
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DD HH:mm:ss"
+    }
+}
+```
+
+
+# MongoDB
+
+Be aware that when importing CSV into MongoDB there is no way to insert null (empty) values. It will insert "some" value and that value is what user declares in Jscon config file. 
+
+For Import CSV with Specified Field Types: https://docs.mongodb.com/database-tools/mongoimport/#import-csv-with-specified-field-types
+
+```json
+{
+    "schema":[
+        {
+            "column_name": "exampleColumn",
+            "data_type": "string",
+            "nullable": true
+        }
+    ],
+    "input": {
+    },
+    "output": {
+        "separator": ",",
+        "header": true,
+        "escape": "\"",
+        "nulls_encoded_as": "",
+        "true_encoded_as": "true",
+        "false_encoded_as": "false",
+        "encoding": "UTF-8",
+        "enclosing": {
+            "characters": "\"",
+            "strict": false
+        },
+        "date_format": "YYYY-MM-DD",
+        "datetime_format": "YYYY-MM-DD HH:mm:ss"
+    }
+}
+```
