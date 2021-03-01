@@ -91,7 +91,7 @@ This Json file is an example of configuration file with default values. "schema"
 ## Usage examples
 
 ```bash
-my-file.csv | npx @trans/csv-format-converter --config-file my-conf.json | clickhouse-client --query="INSERT INTO my_table FORMAT CSVWithNames"
+my-file.csv | npx csv-format-converter --config-file my-conf.json | clickhouse-client --query="INSERT INTO my_table FORMAT CSVWithNames"
 ```
 
 ### Json examples to import to Clickhouse
@@ -113,7 +113,7 @@ This table shows null values that Clickhouse accepts when importing data to an i
 Make sure adding timezone to ```date_format``` and ```datetime_format``` if your timestamp or time columns contain a timezone.
 
 ```bash
-psql 'postgresql://...' -c "\\copy (SELECT * FROM my_table) to stdout with csv header" | npx @trans/csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
+psql 'postgresql://...' -c "\\copy (SELECT * FROM my_table) to stdout with csv header" | npx csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
 ```
 
 
@@ -165,7 +165,7 @@ NOTES:
 When importing from csv, user must be aware of data structure, mainly how nulls, Boolean, enclosing and escape are encoded. This is because input values in my-config.json must match those values.
 
 ```bash
- cat my_data.csv | npx @trans/csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
+ cat my_data.csv | npx csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
 ```
 
 ```json
@@ -216,7 +216,7 @@ NOTES:
 When exporting from MongoDB if user uses a ndjson file and transforms it with json2csv module will throw ParsingException when inserting data with null values in float columns if output "null_encoded_as": "\\N". output "null_encoded_as": "NULL" also will throw ParsingException even with --input_format_csv_unquoted_null_literal_as_null=1 parameter. Is highly recommended to use a different null_encoded_as such as empty string "". This error may occur with large amount of data.
 
 ```bash
- cat my_data.ndjson | npx json2csv | npx @trans/csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
+ cat my_data.ndjson | npx json2csv | npx csv-format-converter --config-file my_config.json | clickhouse-client --query="INSERT INTO my_clickhouse_table FORMAT CSVWithNames"
 ```
 
 ```json
