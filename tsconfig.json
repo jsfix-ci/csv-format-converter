@@ -7,7 +7,7 @@
     "allowSyntheticDefaultImports": false,
     "removeComments": false,
     "allowJs": false,
-    "importHelpers": true,
+    "importHelpers": false,
     "jsx": "react",
     "alwaysStrict": true,
     "sourceMap": true,
