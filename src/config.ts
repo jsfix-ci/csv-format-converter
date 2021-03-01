@@ -1,13 +1,6 @@
-import { env } from '@trans/config';
+import * as commandLineArgs from 'command-line-args';
 import * as fs from 'fs';
 import { checkConfigFile } from './ajv-validator';
-
-/**
- * Module that works with arguments given to the program through console.
- */
-
-// Loads .env param.
-env.load();
 
 /**
  * Column Interface
@@ -63,7 +56,7 @@ const cliArguments = [
   {
     name: 'config-file',
     type: String,
-    description: 'Json file path',
+    description: 'Configuration JSON file path',
   },
 ];
 
@@ -75,10 +68,7 @@ export function setup(argv: string[] = process.argv): Options {
   /**
    * Available options
    */
-  const options = env.getArguments(cliArguments, argv, {
-    handleHelp: true,
-    handleUnknown: true,
-  });
+  const options = commandLineArgs(cliArguments, { argv });
   const configPath: string = options['config-file'];
   // User's Json
   const userData = fs.readFileSync(configPath, { encoding: 'utf-8' });
