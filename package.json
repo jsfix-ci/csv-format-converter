@@ -1,10 +1,16 @@
 {
   "name": "csv-format-converter",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "CSV Converter",
   "author": "The Transparent Team",
   "license": "",
-  "keywords": ["csv", "format", "converter","stdin", "stdout"],
+  "keywords": [
+    "csv",
+    "format",
+    "converter",
+    "stdin",
+    "stdout"
+  ],
   "main": "build/main.js",
   "ts:main": "src/main.ts",
   "types": "build/main.d.ts",
