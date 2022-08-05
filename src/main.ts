@@ -37,7 +37,7 @@ export async function run(options: Options = setup(),
   await pipelinePromise(
     // Read inputStream
     inputStream,
-    csvParse({
+    csvParse.parse({
       // If input data have header omits that first line
       from_line: options.configFile.input.header ? 2 : 1,
       columns: jsonColumns,
